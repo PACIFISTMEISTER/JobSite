@@ -4,7 +4,7 @@
 
 trigger for db
 
-
+```
 CREATE OR REPLACE FUNCTION COUNTER() RETURNS TRIGGER AS $$
 DECLARE
     new_Category_id bigint;
@@ -24,3 +24,4 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER Counter
 AFTER INSERT OR UPDATE OR DELETE ON companies_job FOR EACH ROW EXECUTE PROCEDURE COUNTER ();
+```
