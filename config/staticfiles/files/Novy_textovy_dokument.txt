@@ -1,0 +1,429 @@
+#include <iostream>
+#include <stdio.h>
+#include <mpi.h>
+#include <math.h>
+
+
+using namespace std;
+
+void main(int* argc, char** argv)
+{
+    int numtasks, rank, src, dest, count;
+    MPI_Status status;
+    MPI_Init(argc, &argv);
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
+
+    //printf("Hello MPI process = %d, total number of processes: %d\n", rank, numtasks);
+
+
+    ////ЗАДАНИЕ 1
+    //char messangeOUT[] = "1";
+    //char messangeIN[20];
+
+    //if (rank == 0)
+    //{
+    //   /* MPI_Probe(1, 1, MPI_COMM_WORLD, &status);
+    //    MPI_Get_count(&status, MPI_CHAR, &count);*/
+    //    MPI_Recv(messangeIN, count, MPI_CHAR, 1, 1, MPI_COMM_WORLD, &status);
+
+    //    printf("rank= %d; output message: \"%s\"; count= %d\n", rank, messangeIN, count);
+    //}
+
+    //if (rank == 1)
+    //{
+    //    count = strlen(messangeOUT) + 1;
+    //    MPI_Send(messangeOUT, count, MPI_CHAR, 0, 1, MPI_COMM_WORLD);
+    //    printf("rank= %d; input message: \"%s\"; count= %d\n", rank, messangeOUT, count);
+    //}
+  
+
+    //printf("Hello MPI process = %d, total number of processes: %d\n", rank, numtasks);
+   
+   
+   //ЗАДАНИЕ 1
+    /*char messangeOUT[] = "1";
+    char messangeIN[20];
+   
+    if (rank == 0)
+    {
+        MPI_Probe(1, 1, MPI_COMM_WORLD, &status);
+        MPI_Get_count(&status, MPI_CHAR, &count);
+        MPI_Recv(messangeIN, count, MPI_CHAR, 1, 1, MPI_COMM_WORLD, &status);
+
+        printf("rank= %d; output message: \"%s\"; count= %d\n",rank, messangeIN, count);
+    }
+
+    if (rank == 1)
+    {
+        count = strlen(messangeOUT)+1;
+        MPI_Send(messangeOUT, count, MPI_CHAR, 0, 1, MPI_COMM_WORLD);
+        printf("rank= %d; input message: \"%s\"; count= %d\n", rank, messangeOUT, count);
+    }*/
+
+    
+    //ЗАДАНИЕ 2
+    count = 1;
+    int message=0;
+    for (int j = 0; j < 2; j++)
+    {
+        if (rank == 0)
+        {
+          //  message = 0;
+            MPI_Send(&message, count, MPI_INT, 1, 0, MPI_COMM_WORLD);
+
+            MPI_Recv(&message, count, MPI_INT, numtasks - 1, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+            message++;
+            printf("rank= %d; input messange: %d\n", rank, message);
+        }
+
+        if (rank == numtasks - 1)
+        {
+            MPI_Recv(&message, 1, MPI_INT, numtasks - 2, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+            message++;
+            printf("rank= %d; input messange: %d\n", rank, message);
+            MPI_Send(&message, count, MPI_INT, 0, 0, MPI_COMM_WORLD);
+        }
+        else
+            if (rank != 0)
+            {
+                MPI_Recv(&message, count, MPI_INT, rank - 1, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+                message++;
+                printf("rank= %d; input messange: %d\n", rank, message);
+                MPI_Send(&message, count, MPI_INT, rank + 1, 0, MPI_COMM_WORLD);
+            }
+    }
+
+    //ЗАДАНИЕ 3-4
+
+
+    //int mess=1, tag = 77, n = 1000;
+    //int size = (MPI_BSEND_OVERHEAD + 4) * n;
+    //double starttime, endtime, avertime = 0;
+
+    //if (rank == 0)
+    //{
+    //    char* buf = (char*)malloc(size);
+    //    for (int i = 0; i < n; i++) // Send
+    //    {
+    //        starttime = MPI_Wtime();
+    //        
+    //        MPI_Send(&mess, 1, MPI_INT, 1, tag, MPI_COMM_WORLD);
+    //        endtime = MPI_Wtime();
+    //        avertime += (endtime - starttime);
+    //    }
+    //    cout << "MPI_Send average time: " << avertime / n * 1000 * 1000 << endl;
+    //    avertime = 0;
+
+    //    for (int i = 0; i < n; i++) // Ssend
+    //    {
+    //        starttime = MPI_Wtime();
+    //        MPI_Ssend(&mess, 1, MPI_INT, 1, tag, MPI_COMM_WORLD);
+    //        endtime = MPI_Wtime();
+    //        avertime += (endtime - starttime);
+    //    }
+    //    cout << "MPI_Ssend average time: " << avertime / n * 1000000 << endl;
+    //    avertime = 0;
+
+    //    MPI_Buffer_attach(buf, size); // Bsend
+    //    for (int i = 0; i < n; i++)
+    //    {
+    //        starttime = MPI_Wtime();
+    //        MPI_Bsend(&mess, 1, MPI_INT, 1, tag, MPI_COMM_WORLD);
+    //        endtime = MPI_Wtime();
+    //        avertime += (endtime - starttime);
+    //    }
+    //    MPI_Buffer_detach(buf, &size);
+    //    free(buf);
+    //    cout << "MPI_Bsend average time: " << avertime / n * 1000000 << endl;
+    //}
+    //if (rank == 1)
+    //{
+    //    for (int i = 0; i < n; i++) // Send
+    //        MPI_Recv(&mess, 1, MPI_INT, 0, tag, MPI_COMM_WORLD, &status);
+
+    //    for (int i = 0; i < n; i++) // SSend
+    //        MPI_Recv(&mess, 1, MPI_INT, 0, tag, MPI_COMM_WORLD, &status);
+
+    //    for (int i = 0; i < n; i++) // Bsend
+    //        MPI_Recv(&mess, 1, MPI_INT, 0, tag, MPI_COMM_WORLD, &status);
+    //}
+
+
+    // ЗАДАНИЕ 5
+    //int mess = 0;
+    //count = 1;
+    ////// Тупиковая ситуация:
+    //if (rank == 0)
+    //{
+    //    MPI_Recv(&mess, count, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
+    //    mess++;
+    //    MPI_Send(&mess, count, MPI_INT, 1, 1, MPI_COMM_WORLD);
+    //    printf("rank= %d; input messange: %d\n", rank, mess);
+    //}
+    //if (rank == 1)
+    //{
+    //    MPI_Recv(&mess, count, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
+    //    mess++;
+    //    MPI_Send(&mess, count, MPI_INT, 0, 0, MPI_COMM_WORLD);
+    //    printf("rank= %d; input messange: %d\n", rank, mess);
+    //}
+
+    // Решение тупиковой ситуации:
+   //if (rank == 0)
+    //{
+    //    MPI_Send(&mess, count, MPI_INT, 1, 1, MPI_COMM_WORLD);
+    //    MPI_Recv(&mess, count, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
+    //    mess++;
+    //    
+    //    printf("rank= %d; input messange: %d\n", rank, mess);
+    //}
+    //if (rank == 1)
+    //{
+    //    MPI_Recv(&mess, count, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
+    //    mess++;
+    //    MPI_Send(&mess, count, MPI_INT, 0, 0, MPI_COMM_WORLD);
+    //    printf("rank= %d; input messange: %d\n", rank, mess);
+    //}
+
+    // //ЗАДАНИЕ 6
+    //int mess=1, tag = 77, n = 1000;
+    //double starttime, endtime, avertime = 0;
+    //MPI_Request *request = new MPI_Request[n];
+    //MPI_Status *stat = new MPI_Status[n];
+    //if (rank == 0)
+    //{
+    //    for (int i = 0; i < n; i++) // Isend
+    //    {
+    //        starttime = MPI_Wtime();
+    //        MPI_Isend(&mess, 1, MPI_INT, 1, tag, MPI_COMM_WORLD, &request[i]);
+    //        endtime = MPI_Wtime();
+    //        avertime += (endtime - starttime);
+    //    }
+    //    MPI_Waitall(n,request, stat);
+    //    cout << "MPI_Isend average time: " << avertime / n * 1000000 << endl; 
+    //}
+    //if (rank == 1)
+    //{
+    //    for (int i = 0; i < n; i++) // Irecv
+    //    {
+    //        MPI_Irecv(&mess, 1, MPI_INT, 0, tag, MPI_COMM_WORLD, &request[i]);
+    //        MPI_Wait(&request[i], stat);
+    //    }
+    //}
+
+    // ЗАДАНИЕ 7
+    // Вычислить факториалы до 16 на 8 процессах за 4 шага
+    //if (numtasks == 8)
+    //{
+    //    int kol = 0;
+    //    long long int f;
+    //    long long int f_recv;
+    //    long long int f_recv2;
+    //    switch (rank)
+    //    {
+    //    case 0:
+    //        cout << "1! =  " << 1 << endl;
+
+    //        f = 1 * 2; // 1_2
+    //        kol++;
+    //        cout << "2! =  " << f << endl;
+
+    //        MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, 1, 2, MPI_COMM_WORLD);
+    //        f *= 3; // 12 * 3 (3!)
+    //        kol++;
+    //        cout << "3! =  " << f << endl;
+
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 1, 3, MPI_COMM_WORLD, &status);
+    //        f = f_recv * 5; // 1_2_3_4 * 5 (5!)
+    //        kol++;
+    //        cout << "5! =  " << f << endl;
+
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 3, 4, MPI_COMM_WORLD, &status);
+    //        f = f_recv * 9; // 1_2_3_4_5_6_7_8 * 9 (9!)
+    //        kol++;
+    //        cout << "9! =  " << f << endl;
+    //        break;
+
+    //    case 1:
+    //        f = 3 * 4; // 3 * 4
+    //        kol++;
+
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 0, 2, MPI_COMM_WORLD, &status);
+    //        f *= f_recv; // 1_2 * 3_4 (4!)
+    //        kol++;
+    //        cout << "4! =  " << f << endl;
+    //        MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, 0, 3, MPI_COMM_WORLD);
+    //        MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, 3, 3, MPI_COMM_WORLD);
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 2, 3, MPI_COMM_WORLD, &status);
+    //        MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, 2, 3, MPI_COMM_WORLD);
+
+    //        f *= f_recv; // 1_2_3_4 * 5_6 (6!)
+    //        kol++;
+    //        cout << "6! =  " << f << endl;
+
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 3, 4, MPI_COMM_WORLD, &status);
+    //        MPI_Recv(&f_recv2, 1, MPI_LONG_LONG_INT, 4, 4, MPI_COMM_WORLD, &status);
+    //        f = f_recv * f_recv2; // 1_2_3_4_5_6_7_8 * 9_10 (10!)
+    //        kol++;
+    //        cout << "10! =  " << f << endl;
+    //        break;
+
+    //    case 2:
+    //        f = 5 * 6; // 5 * 6
+    //        kol++;
+    //        MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, 3, 2, MPI_COMM_WORLD);
+
+    //        f_recv2 = f; // 5_6
+    //        f *= 7; // 5_6 * 7
+    //        kol++;
+    //        MPI_Ssend(&f_recv2, 1, MPI_LONG_LONG_INT, 1, 3, MPI_COMM_WORLD);
+
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 1, 3, MPI_COMM_WORLD, &status);
+    //        f *= f_recv; // 1_2_3_4 * 5_6_7 (7!)
+    //        kol++;
+    //        cout << "7! =  " << f << endl;
+
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 3, 4, MPI_COMM_WORLD, &status);
+    //        MPI_Recv(&f_recv2, 1, MPI_LONG_LONG_INT, 4, 4, MPI_COMM_WORLD, &status);
+    //        f = f_recv * f_recv2; // 1_2_3_4_5_6_7_8 * 9_10_11 (11!)
+    //        kol++;
+    //        cout << "11! =  " << f << endl;
+    //        break;
+
+    //    case 3:
+    //        f = 7 * 8; // 7 * 8
+    //        kol++;
+
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 2, 2, MPI_COMM_WORLD, &status);
+    //        f *= f_recv; // 5_6 * 7_8
+    //        kol++;
+
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 1, 3, MPI_COMM_WORLD, &status);
+    //        f *= f_recv; // 1_2_3_4 * 5_6_7_8 (8!) 
+    //        kol++;
+    //        cout << "8! =  " << f << endl;
+
+    //        for (int i = 0; i <= 7; i++)
+    //            if (i != 3)
+    //                MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, i, 4, MPI_COMM_WORLD);
+
+    //        /*MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, 0, 4, MPI_COMM_WORLD);
+    //        MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, 1, 4, MPI_COMM_WORLD);
+    //        MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, 2, 4, MPI_COMM_WORLD);
+    //        MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, 4, 4, MPI_COMM_WORLD);
+    //        MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, 5, 4, MPI_COMM_WORLD);
+    //        MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, 6, 4, MPI_COMM_WORLD);
+    //        MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, 7, 4, MPI_COMM_WORLD);*/
+
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 5, 4, MPI_COMM_WORLD, &status);
+
+    //        f *= f_recv; // 1_2_3_4_5_6_7_8 * 9_10_11_12 (12!)
+    //        kol++;
+    //        cout << "12! =  " << f << endl;
+    //        break;
+
+    //    case 4:
+    //        long long int f_recv3;
+    //        f = 9 * 10; // 9 * 10
+    //        kol++;
+    //        f_recv3 = f; // 9_10
+    //        MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, 5, 2, MPI_COMM_WORLD);
+
+    //        f *= 11; // 9_10 * 11
+    //        kol++;
+    //        f_recv2 = f; // 9_10_11
+
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 5, 3, MPI_COMM_WORLD, &status);
+    //        f = f_recv * 13; // 9_10_11_12 * 13
+    //        kol++;
+    //        MPI_Ssend(&f_recv3, 1, MPI_LONG_LONG_INT, 1, 4, MPI_COMM_WORLD);
+    //        MPI_Ssend(&f_recv2, 1, MPI_LONG_LONG_INT, 2, 4, MPI_COMM_WORLD);
+
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 3, 4, MPI_COMM_WORLD, &status);
+    //        f *= f_recv; // 1_2_3_4_5_6_7_8 * 9_10_11_12_13 (13!)
+    //        kol++;
+    //        cout << "13! =  " << f << endl;
+    //        break;
+
+    //    case 5:
+    //        f = 11 * 12; // 11 * 12
+    //        kol++;
+
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 4, 2, MPI_COMM_WORLD, &status);
+    //        f *= f_recv; // 9_10 * 11_12
+    //        kol++;
+    //        f_recv2 = f; // 9_10_11_12
+    //        MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, 4, 3, MPI_COMM_WORLD);
+    //        MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, 7, 3, MPI_COMM_WORLD);
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 6, 3, MPI_COMM_WORLD, &status);
+    //        MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, 6, 3, MPI_COMM_WORLD);
+
+    //        f *= f_recv; // 9_10_11_12 * 13_14
+    //        kol++;
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 3, 4, MPI_COMM_WORLD, &status);
+
+    //        MPI_Ssend(&f_recv2, 1, MPI_LONG_LONG_INT, 3, 4, MPI_COMM_WORLD);
+    //        f *= f_recv; // 1_2_3_4_5_6_7_8 * 9_10_11_12_13_14 (14!) 
+    //        kol++;
+    //        cout << "14! =  " << f << endl;
+    //        break;
+
+    //    case 6:
+    //        f = 13 * 14; // 13 * 14
+    //        kol++;
+    //        f_recv = f; // 13_14
+    //        MPI_Ssend(&f, 1, MPI_LONG_LONG_INT, 7, 2, MPI_COMM_WORLD);
+
+    //        f *= 15; // 13_14 * 15
+    //        kol++;
+    //        MPI_Ssend(&f_recv, 1, MPI_LONG_LONG_INT, 5, 3, MPI_COMM_WORLD);
+
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 5, 3, MPI_COMM_WORLD, &status);
+    //        f *= f_recv; // 9_10_11_12 * 13_14_15
+    //        kol++;
+
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 3, 4, MPI_COMM_WORLD, &status);
+    //        f *= f_recv; // 1_2_3_4_5_6_7_8 * 9_10_11_12_13_14_15 (15!)
+    //        kol++;
+    //        cout << "15! =  " << f << endl;
+    //        break;
+
+    //    case 7:
+    //        f = 15 * 16; // 15 * 16
+    //        kol++;
+
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 6, 2, MPI_COMM_WORLD, &status);
+    //        f *= f_recv; // 13_14 * 15_16
+    //        kol++;
+
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 5, 3, MPI_COMM_WORLD, &status);
+    //        f *= f_recv; // 9_10_11_12 * 13_14_15_16
+    //        kol++;
+
+    //        MPI_Recv(&f_recv, 1, MPI_LONG_LONG_INT, 3, 4, MPI_COMM_WORLD, &status);
+
+    //        f *= f_recv; // 1_2_3_4_5_6_7_8*9_10_11_12_13_14_15_16 (16!)
+    //        kol++;
+    //        cout << "16! =  " << f << endl;
+
+    //        // опрос на число выполненных перемножений:
+    //        cout << endl << "Sum operations:" << endl;
+    //        for (int i = 0; i <= 6; i++)
+    //            MPI_Ssend(&i, 1, MPI_INT, i, 5, MPI_COMM_WORLD);
+    //        break;
+    //    }
+    //    // вывод числа выполненных перемножений каждым потоком:
+    //    if (rank != 7)
+    //    {
+    //        int test;
+    //        MPI_Recv(&test, 1, MPI_INT, 7, 5, MPI_COMM_WORLD, &status);
+    //        cout << "rank " << rank << " kol = " << kol << endl;
+    //    }
+    //    else
+    //        cout << "rank " << rank << " kol = " << kol << endl;
+    //}
+
+    MPI_Finalize();
+}
