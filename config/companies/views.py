@@ -97,7 +97,10 @@ class ShowResponse(ListView, LoginRequiredMixin):
     paginate_by = 5
 
     def get_queryset(self):
+
+
         return Candidate.objects.filter(averageuser__Responses=Job.objects.filter(id=self.kwargs['pk']).get())
+
         #return AverageUser.objects.get(Responses=Job.objects.filter(id=self.kwargs['pk']).get()).Can
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -118,4 +121,5 @@ class ShowResponse(ListView, LoginRequiredMixin):
 
 
 def ShowContact(request):
+    """контакты"""
     return render(request,template_name='template/contact.html')

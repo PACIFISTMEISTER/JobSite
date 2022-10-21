@@ -225,7 +225,10 @@
                                     </div>
                                     <div class="jobs_right">
                                         <div class="apply_now">
-                                            <a class="heart_mark" href="#"> <i class="fa fa-heart"></i> </a>
+                                             {% if user.is_authenticated %}
+                                            <a onclick="AddLike({{job.id}})"  class="heart_mark"> <i class="fa fa-heart" onclick="AddLike({{job.id}})"> </i></a>
+                                    {%endif%}
+
                                             <a href="{{job.get_absolute_url}}" class="boxed-btn3">Apply Now</a>
                                         </div>
                                         <div class="date">
@@ -391,6 +394,15 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
             $( "#amount" ).val( "$" + $( "#slider-range" ).slider( "values", 0 ) +
                 " - $" + $( "#slider-range" ).slider( "values", 1 ) + "/ Year");
         } );
+
+
+            function AddLike(id){
+         const req = new XMLHttpRequest();
+         const url = "http://localhost:8000/help/Like/"+id
+         req.open("GET", url);
+         req.send();
+    }
+
         </script>
 </body>
 
